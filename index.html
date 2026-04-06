@@ -153,6 +153,20 @@
             white-space: pre-line;
         }
 
+        .gelas {
+          margin-right: 7rem;
+          line-height :1.7;
+                }
+
+        .tetesan {
+          margin-right: 7rem;
+          line-height :1.7;
+        }
+
+        .suntik {
+          line-height :1.7;
+        }
+      
         .hidden { display: none !important; }
     </style>
 </head>
@@ -183,6 +197,9 @@
         <div id="shift-inputs">
             <div class="input-group">
                 <label class="group-title"> INPUT (CC)</label>
+                <label class="gelas">🥛</label>
+                <label class="tetesan">💧</label>
+                <label class="suntikan">💉</label>
                 <div class="input-row">
                     <input type="number" id="minum" placeholder="Minum">
                     <input type="number" id="infus" placeholder="Infus">
@@ -196,7 +213,7 @@
                     </label>
                 </div>
                 <div class="input-row hidden" id="tranfusi_container">
-                    <input type="number" id="tranfusi" placeholder="Tranfusi">
+                    <input type="number" id="tranfusi" placeholder="Tranfusi (cc)">
                 </div>
             </div>
 
@@ -213,7 +230,7 @@
                     </label>
                 </div>
                 <div class="input-row hidden" id="drain_container">
-                    <input type="number" id="drain" placeholder="Drain">
+                    <input type="number" id="drain" placeholder="Drain (cc)">
                 </div>
             </div>
         </div>
