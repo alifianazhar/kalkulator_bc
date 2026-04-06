@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Balance Cairan</title>
+    <style>
+        :root {
+            --primary-med: #0077b6; /* Biru Medis */
+            --secondary-med: #00b4d8;
+            --accent-green: #2a9d8f;
+            --bg-light: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-light); 
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .header {
+            background-color: var(--primary-med);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h2 { margin: 0; font-size: 1.4rem; letter-spacing: 1px; }
+        .header p { margin: 5px 0 0; font-size: 0.8rem; opacity: 0.9; }
+
+        .form-section { padding: 20px; }
+
+        .shift-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: #f1f3f5;
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        .shift-selector label {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: 0.3s;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .shift-selector input[type="radio"] { display: none; }
+        
+        .shift-selector input[type="radio"]:checked + span {
+            background: var(--primary-med);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            display: block;
+        }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label.group-title { 
+            display: block; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .input-row { display: flex; gap: 10px; }
+        .input-row div { flex: 1; }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        input[type="number"]:focus { border-color: var(--secondary-med); box-shadow: 0 0 5px rgba(0,180,216,0.3); }
+
+        .checkbox-wrapper {
+            margin-top: 8px;
+            margin-bottom: 5px;
+        }
+        
+        .checkbox-wrapper label {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: #444;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover { background-color: #21867a; }
+
+        .result-card {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fdfdfd;
+            border: 1px dashed var(--primary-med);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result-header {
+            color: var(--primary-med);
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+        }
+
+        .result-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>🏥 MONITORING CAIRAN</h2>
+        <p>Input-Output Monitoring System</p>
+    </div>
+
+    <div class="form-section">
+        <div class="shift-selector">
+            <label>
+                <input type="radio" name="dinas" value="Pagi" onclick="aturForm()">
+                <span>PAGI</span>
+            </label>
+            <label>
+                <input type="radio" name="dinas" value="Sore" onclick="aturForm()">
+                <span>SORE</span>
+            </label>
+            <label>
+                <input type="radio" name="dinas" value="Malam" onclick="aturForm()">
+                <span>MALAM</span>
+            </label>
+        </div>
+
+        <div id="shift-inputs">
+            <div class="input-group">
+                <label class="group-title"> INPUT (CC)</label>
+                <div class="input-row">
+                    <input type="number" id="minum" placeholder="Minum">
+                    <input type="number" id="infus" placeholder="Infus">
+                    <input type="number" id="obat" placeholder="Obat">
+                </div>
+                
+                <div class="checkbox-wrapper">
+                    <label>
+                        <input type="checkbox" id="cek_tranfusi" onchange="toggleVis('tranfusi_container', this.checked)"> 
+                        + Ada Tranfusi?
+                    </label>
+                </div>
+                <div class="input-row hidden" id="tranfusi_container">
+                    <input type="number" id="tranfusi" placeholder="Tranfusi">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="group-title"> OUTPUT (CC)</label>
+                <div class="input-row">
+                    <input type="number" id="urine" placeholder="Urine">
+                </div>
+
+                <div class="checkbox-wrapper">
+                    <label>
+                        <input type="checkbox" id="cek_drain" onchange="toggleVis('drain_container', this.checked)"> 
+                        + Ada Drain?
+                    </label>
+                </div>
+                <div class="input-row hidden" id="drain_container">
+                    <input type="number" id="drain" placeholder="Drain">
+                </div>
+            </div>
+        </div>
+
+        <div id="section-24jam" class="hidden">
+            <div style="border-top: 2px solid #eee; margin: 20px 0; padding-top: 10px;">
+                <label class="group-title" style="color: var(--primary-med);">📊 DATA AKUMULASI (SHIFT SEBELUMNYA)</label>
+                <div class="input-group">
+                    <label class="group-title">Pagi</label>
+                    <div class="input-row">
+                        <input type="number" id="input_pagi" placeholder="Input Total Pagi">
+                        <input type="number" id="output_pagi" placeholder="Output Total Pagi">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="group-title">Sore</label>
+                    <div class="input-row">
+                        <input type="number" id="input_sore" placeholder="Input Total Sore">
+                        <input type="number" id="output_sore" placeholder="Output Total Sore">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="hitungSemua()">✅ HITUNG BALANCE</button>
+
+        <div id="box-hasil" class="result-card">
+            <div class="result-header">📑 LAPORAN BALANCE CAIRAN</div>
+            <div id="hasil-teks" class="result-text"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function aturForm() {
+        const dinas = document.querySelector('input[name="dinas"]:checked').value;
+        const section24 = document.getElementById("section-24jam");
+        document.getElementById("box-hasil").style.display = "none";
+        
+        if (dinas === "Malam") {
+            section24.classList.remove("hidden");
+        } else {
+            section24.classList.add("hidden");
+        }
+    }
+
+    // Fungsi untuk menampilkan/menyembunyikan input tambahan
+    function toggleVis(idContainer, isChecked) {
+        const container = document.getElementById(idContainer);
+        if (isChecked) {
+            container.classList.remove("hidden");
+        } else {
+            container.classList.add("hidden");
+            // Mengosongkan nilai jika tidak di-ceklis
+            container.querySelector('input').value = ""; 
+        }
+    }
+
+    function hitungSemua() {
+        const radioDinas = document.querySelector('input[name="dinas"]:checked');
+        if (!radioDinas) { alert("Pilih shift dinas!"); return; }
+
+        const dinas = radioDinas.value;
+        const getVal = (id) => Number(document.getElementById(id).value) || 0;
+
+        let jamDinas, durasi;
+        if (dinas === "Pagi") { jamDinas = "07:00-14:00"; durasi = "7 jam"; }
+        else if (dinas === "Sore") { jamDinas = "14:00-21:00"; durasi = "7 jam"; }
+        else { jamDinas = "21:00-07:00"; durasi = "10 jam"; }
+
+        // Ambil nilai input dasar
+        let minum = getVal("minum"), infus = getVal("infus"), obat = getVal("obat");
+        let urine = getVal("urine");
+
+        // Cek status ceklis
+        let isTranfusi = document.getElementById("cek_tranfusi").checked;
+        let isDrain = document.getElementById("cek_drain").checked;
+
+        // Jika diceklis ambil nilainya, jika tidak 0
+        let tranfusi = isTranfusi ? getVal("tranfusi") : 0;
+        let drain = isDrain ? getVal("drain") : 0;
+
+        let inShift = minum + infus + obat + tranfusi;
+        let outShift = urine + drain;
+        let balShift = inShift - outShift;
+
+        let teks = `Balance cairan ${jamDinas}:\n`;
+
+        // Susun teks Input secara dinamis
+        let teksInput = `Input: Minum ${minum}cc + Infus ${infus}cc + Obat ${obat}cc`;
+        if (isTranfusi) {
+            teksInput += ` + Tranfusi ${tranfusi}cc`;
+        }
+        teksInput += ` = ${inShift}cc\n`;
+
+        // Susun teks Output secara dinamis
+        let teksOutput = `Output: Urine ${urine}cc`;
+        if (isDrain) {
+            teksOutput += ` + Drain ${drain}cc`;
+        }
+        teksOutput += ` = ${outShift}cc\n`;
+
+        // Gabungkan
+        teks += teksInput;
+        teks += teksOutput;
+        teks += `Balance: ${balShift >= 0 ? '+' : ''}${balShift}cc / ${durasi}\n`;
+
+        // Jika dinas Malam (Akumulasi 24 Jam)
+        if (dinas === "Malam") {
+            let inPagi = getVal("input_pagi"), outPagi = getVal("output_pagi");
+            let inSore = getVal("input_sore"), outSore = getVal("output_sore");
+            
+            let totalIn = inPagi + inSore + inShift;
+            let totalOut = outPagi + outSore + outShift;
+            let balTotal = totalIn - totalOut;
+
+            teks += `\n------------------------------\n`;
+            teks += `BC / 24 JAM\n`;
+            teks += `Input : ${inPagi} + ${inSore} + ${inShift} = ${totalIn}cc\n`;
+            teks += `Output: ${outPagi} + ${outSore} + ${outShift} = ${totalOut}cc\n`;
+            teks += `Balance: ${balTotal >= 0 ? '+' : ''}${balTotal}cc / 24 jam`;
+        }
+
+        const box = document.getElementById("box-hasil");
+        document.getElementById("hasil-teks").innerText = teks;
+        box.style.display = "block";
+        box.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
