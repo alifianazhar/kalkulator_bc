@@ -152,7 +152,7 @@
             line-height: 1.5;
             white-space: pre-line;
         }
-
+      
         .gelas {
           margin-right: 7rem;
           line-height :1.7;
@@ -228,9 +228,16 @@
                         <input type="checkbox" id="cek_drain" onchange="toggleVis('drain_container', this.checked)"> 
                         + Ada Drain?
                     </label>
+                    <label>
+                        <input type="checkbox" id="cek_NGT" onchange="toggleVis('NGT_container', this.checked)"> 
+                        + Ada Produksi NGT?
+                    </label>
                 </div>
                 <div class="input-row hidden" id="drain_container">
                     <input type="number" id="drain" placeholder="Drain (cc)">
+                </div>
+                <div class="input-row hidden" id="NGT_container">
+                    <input type="number" id="NGT" placeholder="NGT (cc)">
                 </div>
             </div>
         </div>
@@ -308,13 +315,15 @@
         // Cek status ceklis
         let isTranfusi = document.getElementById("cek_tranfusi").checked;
         let isDrain = document.getElementById("cek_drain").checked;
+        let isNGT = document.getElementById("cek_NGT").checked
 
         // Jika diceklis ambil nilainya, jika tidak 0
         let tranfusi = isTranfusi ? getVal("tranfusi") : 0;
         let drain = isDrain ? getVal("drain") : 0;
+        let NGT = isNGT ? getVal("NGT") : 0;
 
         let inShift = minum + infus + obat + tranfusi;
-        let outShift = urine + drain;
+        let outShift = urine + drain + NGT;
         let balShift = inShift - outShift;
 
         let teks = `Balance cairan ${jamDinas}:\n`;
@@ -330,6 +339,9 @@
         let teksOutput = `Output: Urine ${urine}cc`;
         if (isDrain) {
             teksOutput += ` + Drain ${drain}cc`;
+        }
+        if (isNGT) {
+            teksOutput += ` + NGT ${NGT}cc`;
         }
         teksOutput += ` = ${outShift}cc\n`;
 
