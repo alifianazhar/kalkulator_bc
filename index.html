@@ -192,7 +192,9 @@
                 <span>MALAM</span>
             </label>
         </div>
-
+      <span>IWL</span>
+      <input type="number" id="BB" placeholder="Berat Badan (kg)">
+      <br></br>
         <div id="shift-inputs">
             <div class="input-group">
                 <label class="group-title"> INPUT (CC)</label>
@@ -310,6 +312,8 @@
         // Ambil nilai input dasar
         let minum = getVal("minum"), infus = getVal("infus"), obat = getVal("obat");
         let urine = getVal("urine");
+        let BB = getVal("BB")
+        let iwl = 0.5*BB*7
 
         // Cek status ceklis
         let isTranfusi = document.getElementById("cek_tranfusi").checked;
@@ -335,7 +339,7 @@
         teksInput += ` = ${inShift}cc\n`;
 
         // Susun teks Output secara dinamis
-        let teksOutput = `Output: Urine ${urine}cc`;
+        let teksOutput = `Output: Urine ${urine}cc + IWL ${iwl}cc`;
         if (isDrain) {
             teksOutput += ` + Drain ${drain}cc`;
         }
