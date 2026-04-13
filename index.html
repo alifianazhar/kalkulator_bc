@@ -82,7 +82,7 @@
             margin-bottom: 5px;
         }
 
-        .input-row { display: flex; gap: 10px; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .input-row div { flex: 1; }
 
         input[type="number"] {
@@ -99,13 +99,16 @@
 
         .checkbox-wrapper {
             margin-top: 8px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         
         .checkbox-wrapper label {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             font-size: 0.85rem;
             color: #444;
             cursor: pointer;
@@ -151,20 +154,7 @@
             font-size: 0.9rem;
             line-height: 1.5;
             white-space: pre-line;
-        }
-      
-        .gelas {
-          margin-right: 8rem;
-          line-height :1.7;
-                }
-
-        .tetesan {
-          margin-right: 8rem;
-          line-height :1.7;
-        }
-
-        .suntik {
-          line-height :1.7;
+            color: #333;
         }
       
         .hidden { display: none !important; }
@@ -175,6 +165,7 @@
 <div class="container">
     <div class="header">
         <h2>🏥 KALKULATOR BALANCE CAIRAN</h2>
+        <p>Aplikasi Monitoring Intake & Output Pasien</p>
     </div>
 
     <div class="form-section">
@@ -192,19 +183,14 @@
                 <span>MALAM</span>
             </label>
         </div>
-      <span>IWL</span>
-      <input type="number" id="BB" placeholder="Berat Badan (kg)">
-      <br></br>
+
         <div id="shift-inputs">
             <div class="input-group">
-                <label class="group-title"> INPUT (CC)</label>
-                <label class="gelas">🥛</label>
-                <label class="tetesan">💧</label>
-                <label class="suntikan">💉</label>
+                <label class="group-title">📥 INPUT (CC)</label>
                 <div class="input-row">
-                    <input type="number" id="minum" placeholder="Minum">
-                    <input type="number" id="infus" placeholder="Infus">
-                    <input type="number" id="obat" placeholder="Obat">
+                    <input type="number" id="minum" placeholder="Minum (🥛)">
+                    <input type="number" id="infus" placeholder="Infus (💧)">
+                    <input type="number" id="obat" placeholder="Obat (💉)">
                 </div>
                 
                 <div class="checkbox-wrapper">
@@ -214,12 +200,12 @@
                     </label>
                 </div>
                 <div class="input-row hidden" id="tranfusi_container">
-                    <input type="number" id="tranfusi" placeholder="Tranfusi (cc)">
+                    <input type="number" id="tranfusi" placeholder="Jumlah Tranfusi (cc)">
                 </div>
             </div>
 
             <div class="input-group">
-                <label class="group-title"> OUTPUT (CC)</label>
+                <label class="group-title">📤 OUTPUT (CC)</label>
                 <div class="input-row">
                     <input type="number" id="urine" placeholder="Urine">
                 </div>
@@ -233,31 +219,39 @@
                         <input type="checkbox" id="cek_NGT" onchange="toggleVis('NGT_container', this.checked)"> 
                         + Ada Produksi NGT?
                     </label>
+                    <label>
+                        <input type="checkbox" id="cek_BB" onchange="toggleVis('BB_container', this.checked)"> 
+                        + Hitung IWL (Berat Badan)
+                    </label>
                 </div>
+                
                 <div class="input-row hidden" id="drain_container">
-                    <input type="number" id="drain" placeholder="Drain (cc)">
+                    <input type="number" id="drain" placeholder="Isi Drain (cc)">
                 </div>
                 <div class="input-row hidden" id="NGT_container">
-                    <input type="number" id="NGT" placeholder="produksi NGT (cc)">
+                    <input type="number" id="NGT" placeholder="Produksi NGT (cc)">
+                </div>
+                <div class="input-row hidden" id="BB_container">
+                    <input type="number" id="BB" placeholder="Berat Badan Pasien (KG)">
                 </div>
             </div>
         </div>
 
         <div id="section-24jam" class="hidden">
             <div style="border-top: 2px solid #eee; margin: 20px 0; padding-top: 10px;">
-                <label class="group-title" style="color: var(--primary-med);">📊 DATA AKUMULASI (SHIFT SEBELUMNYA)</label>
+                <label class="group-title" style="color: var(--primary-med);">📊 DATA AKUMULASI (PAGI & SORE)</label>
                 <div class="input-group">
-                    <label class="group-title">Pagi</label>
+                    <label class="group-title">Shift Pagi</label>
                     <div class="input-row">
-                        <input type="number" id="input_pagi" placeholder="Input Total Pagi">
-                        <input type="number" id="output_pagi" placeholder="Output Total Pagi">
+                        <input type="number" id="input_pagi" placeholder="Total In Pagi">
+                        <input type="number" id="output_pagi" placeholder="Total Out Pagi">
                     </div>
                 </div>
                 <div class="input-group">
-                    <label class="group-title">Sore</label>
+                    <label class="group-title">Shift Sore</label>
                     <div class="input-row">
-                        <input type="number" id="input_sore" placeholder="Input Total Sore">
-                        <input type="number" id="output_sore" placeholder="Output Total Sore">
+                        <input type="number" id="input_sore" placeholder="Total In Sore">
+                        <input type="number" id="output_sore" placeholder="Total Out Sore">
                     </div>
                 </div>
             </div>
@@ -274,7 +268,10 @@
 
 <script>
     function aturForm() {
-        const dinas = document.querySelector('input[name="dinas"]:checked').value;
+        const dinasObj = document.querySelector('input[name="dinas"]:checked');
+        if (!dinasObj) return;
+
+        const dinas = dinasObj.value;
         const section24 = document.getElementById("section-24jam");
         document.getElementById("box-hasil").style.display = "none";
         
@@ -285,88 +282,90 @@
         }
     }
 
-    // Fungsi untuk menampilkan/menyembunyikan input tambahan
     function toggleVis(idContainer, isChecked) {
         const container = document.getElementById(idContainer);
         if (isChecked) {
             container.classList.remove("hidden");
         } else {
             container.classList.add("hidden");
-            // Mengosongkan nilai jika tidak di-ceklis
             container.querySelector('input').value = ""; 
         }
     }
 
     function hitungSemua() {
         const radioDinas = document.querySelector('input[name="dinas"]:checked');
-        if (!radioDinas) { alert("Pilih shift dinas!"); return; }
+        if (!radioDinas) { 
+            alert("Silakan pilih shift dinas terlebih dahulu!"); 
+            return; 
+        }
 
         const dinas = radioDinas.value;
         const getVal = (id) => Number(document.getElementById(id).value) || 0;
 
-        let jamDinas, durasi;
-        if (dinas === "Pagi") { jamDinas = "07:00-14:00"; durasi = "7 jam"; }
-        else if (dinas === "Sore") { jamDinas = "14:00-21:00"; durasi = "7 jam"; }
-        else { jamDinas = "21:00-07:00"; durasi = "10 jam"; }
+        let jamDinas, durasi, jamAngka;
+        if (dinas === "Pagi") { jamDinas = "07:00-14:00"; durasi = "7 jam"; jamAngka = 7; }
+        else if (dinas === "Sore") { jamDinas = "14:00-21:00"; durasi = "7 jam"; jamAngka = 7; }
+        else { jamDinas = "21:00-07:00"; durasi = "10 jam"; jamAngka = 10; }
 
-        // Ambil nilai input dasar
-        let minum = getVal("minum"), infus = getVal("infus"), obat = getVal("obat");
-        let urine = getVal("urine");
-        let BB = getVal("BB")
-        let iwl = 0.5*BB*7
-
-        // Cek status ceklis
+        // Intake
+        let minum = getVal("minum");
+        let infus = getVal("infus");
+        let obat = getVal("obat");
         let isTranfusi = document.getElementById("cek_tranfusi").checked;
-        let isDrain = document.getElementById("cek_drain").checked;
-        let isNGT = document.getElementById("cek_NGT").checked
-
-        // Jika diceklis ambil nilainya, jika tidak 0
         let tranfusi = isTranfusi ? getVal("tranfusi") : 0;
+
+        // Output
+        let urine = getVal("urine");
+        let isDrain = document.getElementById("cek_drain").checked;
+        let isNGT = document.getElementById("cek_NGT").checked;
+        let isIWL = document.getElementById("cek_BB").checked;
+
         let drain = isDrain ? getVal("drain") : 0;
         let NGT = isNGT ? getVal("NGT") : 0;
+        let BB = isIWL ? getVal("BB") : 0;
+
+        // Perhitungan IWL (15 * BB / 24 jam) * jam kerja
+        let IWL = 0;
+        if (isIWL && BB > 0) {
+            IWL = Math.round((15 * BB / 24) * jamAngka);
+        }
 
         let inShift = minum + infus + obat + tranfusi;
-        let outShift = urine + drain + NGT + iwl;
+        let outShift = urine + drain + NGT + IWL;
         let balShift = inShift - outShift;
 
-        let teks = `Balance cairan ${jamDinas}:\n`;
-
-        // Susun teks Input secara dinamis
+        // Susun Teks Laporan
+        let teks = `${jamDinas}\n`;
+        
         let teksInput = `Input: Minum ${minum}cc + Infus ${infus}cc + Obat ${obat}cc`;
-        if (isTranfusi) {
-            teksInput += ` + Tranfusi ${tranfusi}cc`;
-        }
+        if (isTranfusi) teksInput += ` + Tranfusi ${tranfusi}cc`;
         teksInput += ` = ${inShift}cc\n`;
 
-        // Susun teks Output secara dinamis
-        let teksOutput = `Output: Urine ${urine}cc + IWL ${iwl}cc`;
-        if (isDrain) {
-            teksOutput += ` + Drain ${drain}cc`;
-        }
-        if (isNGT) {
-            teksOutput += ` + produksi NGT ${NGT}cc`;
-        }
+        let teksOutput = `Output: Urine ${urine}cc`;
+        if (isDrain) teksOutput += ` + Drain ${drain}cc`;
+        if (isNGT) teksOutput += ` + NGT ${NGT}cc`;
+        if (isIWL) teksOutput += ` + IWL ${IWL}cc`;
         teksOutput += ` = ${outShift}cc\n`;
 
-        // Gabungkan
-        teks += teksInput;
-        teks += teksOutput;
-        teks += `Balance: ${balShift >= 0 ? '+' : ''}${balShift}cc / ${durasi}\n`;
+        teks += teksInput + teksOutput;
+        teks += `Balance Shift: ${balShift >= 0 ? '+' : ''}${balShift}cc / ${durasi}`;
 
-        // Jika dinas Malam (Akumulasi 24 Jam)
+        // Logika Akumulasi 24 Jam
         if (dinas === "Malam") {
-            let inPagi = getVal("input_pagi"), outPagi = getVal("output_pagi");
-            let inSore = getVal("input_sore"), outSore = getVal("output_sore");
+            let inPagi = getVal("input_pagi");
+            let outPagi = getVal("output_pagi");
+            let inSore = getVal("input_sore");
+            let outSore = getVal("output_sore");
             
             let totalIn = inPagi + inSore + inShift;
             let totalOut = outPagi + outSore + outShift;
             let balTotal = totalIn - totalOut;
 
             teks += `\n------------------------------\n`;
-            teks += `BC / 24 JAM\n`;
-            teks += `Input : ${inPagi} + ${inSore} + ${inShift} = ${totalIn}cc\n`;
-            teks += `Output: ${outPagi} + ${outSore} + ${outShift} = ${totalOut}cc\n`;
-            teks += `Balance: ${balTotal >= 0 ? '+' : ''}${balTotal}cc / 24 jam`;
+            teks += `Balance Cairan/24 JAM\n`;
+            teks += `Total Input : ${inPagi} + ${inSore} + ${inShift} = ${totalIn} cc\n`;
+            teks += `Total Output: ${outPagi} + ${outSore} + ${outShift} = ${totalOut} cc\n`;
+            teks += `Balance Total: ${balTotal >= 0 ? '+' : ''}${balTotal} cc / 24 jam`;
         }
 
         const box = document.getElementById("box-hasil");
