@@ -221,7 +221,7 @@
                     </label>
                     <label>
                         <input type="checkbox" id="cek_BB" onchange="toggleVis('BB_container', this.checked)"> 
-                        + Hitung IWL (Berat Badan)
+                        + IWL
                     </label>
                 </div>
                 
@@ -232,7 +232,8 @@
                     <input type="number" id="NGT" placeholder="Produksi NGT (cc)">
                 </div>
                 <div class="input-row hidden" id="BB_container">
-                    <input type="number" id="BB" placeholder="Berat Badan Pasien (KG)">
+                    <input type="number" id="BB" placeholder="Berat Badan (KG)">
+                    <input type="number" id="suhu" placeholder="Suhu (℃)">
                 </div>
             </div>
         </div>
@@ -313,6 +314,7 @@
         let obat = getVal("obat");
         let isTranfusi = document.getElementById("cek_tranfusi").checked;
         let tranfusi = isTranfusi ? getVal("tranfusi") : 0;
+        let inShift = minum + infus + obat + tranfusi;
 
         // Output
         let urine = getVal("urine");
@@ -323,17 +325,30 @@
         let drain = isDrain ? getVal("drain") : 0;
         let NGT = isNGT ? getVal("NGT") : 0;
         let BB = isIWL ? getVal("BB") : 0;
+        let suhu =getVal("suhu");
 
         // Perhitungan IWL (15 * BB / 24 jam) * jam kerja
         let IWL = 0;
         if (isIWL && BB > 0) {
-            IWL = Math.round((15 * BB / 24) * jamAngka);
+            IWL = (15 * BB / 24);
         }
-
-        let inShift = minum + infus + obat + tranfusi;
-        let outShift = urine + drain + NGT + IWL;
-        let balShift = inShift - outShift;
-
+        let IWLnormal = IWL * jamAngka;
+        let IWLfloat = IWLnormal.toFixed(2);
+        
+        //perhitungan iwl dengan demam
+        let IWLdemam = 0;
+        if (suhu > 37) {
+            IWLdemam = ((((10/100 * inShift) * (suhu-37) / 24) + IWL ) * jamAngka);
+        }
+        let IWLkenaikanSuhu = IWLdemam.toFixed(2);
+        
+        let IWLtotal = Number(IWLfloat) + Number(IWLkenaikanSuhu);
+        
+        let outShift = urine + drain + NGT + IWLtotal;
+        let outShiftBulat = outShift.toFixed(2);
+        let balanceShift = inShift - outShift;
+        let balShift = balanceShift.toFixed(2);
+        
         // Susun Teks Laporan
         let teks = `${jamDinas}\n`;
         
@@ -344,8 +359,8 @@
         let teksOutput = `Output: Urine ${urine}cc`;
         if (isDrain) teksOutput += ` + Drain ${drain}cc`;
         if (isNGT) teksOutput += ` + NGT ${NGT}cc`;
-        if (isIWL) teksOutput += ` + IWL ${IWL}cc`;
-        teksOutput += ` = ${outShift}cc\n`;
+        if (isIWL) teksOutput += ` + IWL ${IWLfloat}cc + suhu ${suhu} + IWL saat demam ${IWLkenaikanSuhu}`;
+        teksOutput += ` = ${outShiftBulat}cc\n`;
 
         teks += teksInput + teksOutput;
         teks += `Balance Shift: ${balShift >= 0 ? '+' : ''}${balShift}cc / ${durasi}`;
