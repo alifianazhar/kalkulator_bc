@@ -221,7 +221,7 @@
                     </label>
                     <label>
                         <input type="checkbox" id="cek_BB" onchange="toggleVis('BB_container', this.checked)"> 
-                        + IWL
+                        + IWL/24jam
                     </label>
                 </div>
                 
@@ -332,22 +332,22 @@
         if (isIWL && BB > 0) {
             IWL = (15 * BB / 24);
         }
-        let IWLnormal = IWL * jamAngka;
-        let IWLfloat = IWLnormal.toFixed(2);
+        let IWLnormal = IWL;
+        let IWLfloat = IWLnormal.toFixed(1);
         
         //perhitungan iwl dengan demam
         let IWLdemam = 0;
-        if (suhu > 37) {
-            IWLdemam = ((((10/100 * inShift) * (suhu-37) / 24) + IWL ) * jamAngka);
+        if (suhu > 36.8) {
+            IWLdemam = (200 * (suhu-36.8));
         }
-        let IWLkenaikanSuhu = IWLdemam.toFixed(2);
+        let IWLkenaikanSuhu = IWLdemam.toFixed(1);
         
         let IWLtotal = Number(IWLfloat) + Number(IWLkenaikanSuhu);
         
         let outShift = urine + drain + NGT + IWLtotal;
-        let outShiftBulat = outShift.toFixed(2);
+        let outShiftBulat = outShift.toFixed(1);
         let balanceShift = inShift - outShift;
-        let balShift = balanceShift.toFixed(2);
+        let balShift = balanceShift.toFixed(1);
         
         // Susun Teks Laporan
         let teks = `${jamDinas}\n`;
@@ -359,7 +359,9 @@
         let teksOutput = `Output: Urine ${urine}cc`;
         if (isDrain) teksOutput += ` + Drain ${drain}cc`;
         if (isNGT) teksOutput += ` + NGT ${NGT}cc`;
-        if (isIWL) teksOutput += ` + IWL ${IWLfloat}cc + suhu ${suhu} + IWL saat demam ${IWLkenaikanSuhu}`;
+        //if (isIWL) teksOutput += ` + IWL ${IWLfloat}cc + suhu ${suhu} + IWL saat demam ${IWLkenaikanSuhu}`;
+      if (suhu <= 36.8) teksOutput += ` + IWL ${IWLfloat}cc`;
+      if (suhu > 36.8) teksOutput += ` + IWL demam ${IWLkenaikanSuhu}`;
         teksOutput += ` = ${outShiftBulat}cc\n`;
 
         teks += teksInput + teksOutput;
